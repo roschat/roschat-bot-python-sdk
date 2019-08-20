@@ -12,9 +12,9 @@ bot.start()
 
 def cb_send_message(res):
   if not res.get('id'):
-    print 'Не удалось отправить сообщение'
+    print('Не удалось отправить сообщение')
   else:
-    print 'Сообщение доставлено пользователю'
+    print('Сообщение доставлено пользователю')
 
 def on_keyboard(cid):
   keyboard = [
@@ -41,7 +41,7 @@ def on_message_event(*args):
   data = args[0]
   cid, data, id, dataType = [data[k] for k in ('cid', 'data', 'id', 'dataType')]
   if (dataType == 'unstored'):
-    print '...'
+    print('...')
     return
   bot.send_message_received(id)
   bot.send_message_watched(id)

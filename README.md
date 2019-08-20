@@ -2,17 +2,17 @@
 Python SDK для написания ботов для сервера РОСЧАТ.
 
 ## Установка
-Перед запуском необходимо заранее установить:
+Перед запуском убедитесь, что у вас уже установлены:
 * python3.6
 * pip
-* virtualenv
+* python3-venv
 
 Скопируйте репозиторий
 ```bash
 git clone https://github.com/roschat/roschat-bot-python-sdk
 cd roschat-bot-python-sdk
-virtualenv ENV
-source ENV/bit/activate
+python3 -m venv env
+source env/bit/activate
 pip install -r requirements.txt
 ```
 
@@ -95,7 +95,6 @@ __`on(BOT_BUTTON_EVENT, function)`__
 __`set_bot_keyboard({cid, keyboard[, action]})`__
 
 Установить клавиатуру в чате с пользователем ([описание](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-set-bot-keyboard))
-
 
 ## Пример бота
 В папке [`example`](https://github.com/roschat/roschat-bot-python-sdk/tree/master/example) можно найти реализацию бота для сервера РОСЧАТ с использованием данного SDK. 
