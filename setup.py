@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 from io import open
 
 def read(filename):
@@ -8,6 +8,7 @@ def read(filename):
 
 setup(name='roschatBotPythonSDK',
       version='0.0.1',
+      packages=find_packages(),
       long_description=read('README.md'),
       long_description_content_type="text/markdown",
       author='tinychief',

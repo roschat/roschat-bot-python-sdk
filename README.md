@@ -11,6 +11,8 @@ Python SDK для написания ботов для сервера РОСЧА
 ```bash
 git clone https://github.com/roschat/roschat-bot-python-sdk
 cd roschat-bot-python-sdk
+virtualenv ENV
+source ENV/bit/activate
 pip install -r requirements.txt
 ```
 
@@ -35,12 +37,65 @@ bot = Roschat_Bot(
     bot_name="YOUR_BOT_NAME"
   )
 bot.start()
-def on_bot_message
-    # обработка события
-bot.on(BOT_MESSAGE_EVENT, on_bot_message) # прослушивание входящего сообщения
 ```
 
 Запустите скрипт командой:
 ```bash
 python -m bot-dir # bot-dir — папка с вашим ботом
 ```
+
+## Пример работы с API
+Обработка входящего события от сервера
+```py
+def on_bot_message(*args):
+  data = args[0]
+  bot.sendMessage(data['cid'], 'Тестовое сообщение') # отправка сообщения
+
+bot.on(BOT_MESSAGE_EVENT, on_bot_message) # прослушивание входящего сообщения
+```
+
+## Методы Roschat_Bot
+### Инициализация
+__`start()`__
+
+Создание сокет соединения с сервером и начало работы бота
+
+### Работа с сообщениями
+__`on(BOT_MESSAGE_EVENT, event_hadler)`__
+
+Прослушивание события `bot-message-event` - входящее сообщении от пользователя
+
+__`send_message({cid, dataType}, data[, callback])`__
+
+или
+
+__`send_message(cid, data[, callback])`__ - для отправки текстового сообщения
+
+Отправить сообщения пользователю ([описание](
+https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-send-bot-message
+))
+
+__`send_message_received(id[, callback])`__
+
+Сообщить о получении сообщения пользователя ([описание](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-bot-message-received))
+
+__`send_message_watched(id[, callback])`__
+
+Сообщить о просмотре сообщения пользователя ([описание](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-bot-message-watched))
+
+__`delete_bot_message(id[, callback])`__
+
+Удалить сообщение в чате ([описание](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-delete-bot-message))
+
+### Работа с клавиатурой
+__`on(BOT_BUTTON_EVENT, function)`__
+
+Событие `bot-button-event` - нажатие кнопки пользователем ([описание](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-bot-button-event))
+
+__`set_bot_keyboard({cid, keyboard[, action]})`__
+
+Установить клавиатуру в чате с пользователем ([описание](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api-set-bot-keyboard))
+
+
+## Пример бота
+В папке [`example`](https://github.com/roschat/roschat-bot-python-sdk/tree/master/example) можно найти реализацию бота для сервера РОСЧАТ с использованием данного SDK. 

@@ -34,7 +34,11 @@ class Roschat_Bot():
 
   def start(self):
     server_url = self.base_url + '/ajax/config.json'
-    r = requests.get(server_url)
+    try:
+      r = requests.get(server_url)
+    except requests.exceptions.RequestException as e:
+      print e
+      sys.exit(1)
     server_config = json.loads(r.text)
     web_sockets_port = server_config.get('webSocketsPort')
     socket_url = self.base_url + ':' + web_sockets_port
@@ -57,20 +61,20 @@ class Roschat_Bot():
   def emit(self, event_name, data, callback=None):
     sio.emit(event_name, data=data, callback=callback)
 
-  def send_message(self, params, msg, callback=cb_send_message):
+  def send_message(self, params, data, callback=cb_send_message):
     if not params:
       print 'Для отправки сообщения необходим, как минимум cid пользователя'
     if type(params) is int:
       cid = params
       params = {
         'cid': cid,
-        'data': msg
+        'data': data
       }
     elif type(params) is dict:
       if not params.get('cid'):
         print 'Для отправки сообщения необходим cid пользователя'
         return
-      params['data']=msg
+      params['data']=data
     sio.emit(SEND_BOT_MESSAGE, data=params, callback=callback)
 
   def send_message_received(self, msg_id, callback=None):
@@ -81,7 +85,7 @@ class Roschat_Bot():
 
   def send_message_watched(self, msg_id, callback=None):
     if not msg_id:
-      print 'Обязательный параметр id не предоставлен'
+      print 'Обязательный параметр msg_id не предоставлен'
       return
     sio.emit(BOT_MESSAGE_WATCHED, data={'id': msg_id}, callback=callback)
 

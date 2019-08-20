@@ -39,38 +39,47 @@ def on_keyboard(cid):
 
 def on_message_event(*args):
   data = args[0]
-  if (data.get('dataType') == 'unstored'):
+  cid, data, id, dataType = [data[k] for k in ('cid', 'data', 'id', 'dataType')]
+  if (dataType == 'unstored'):
     print '...'
     return
-  cid, text, id = [data[k] for k in ('cid', 'data', 'id')]
   bot.send_message_received(id)
   bot.send_message_watched(id)
-  if text == '/start':
+  if (dataType == 'data'):
     bot.send_message(
-      cid,
-      msg='Сейчас начнем',
-      callback=cb_send_message
-      )
-  elif text == '/keyboard':
-    bot.send_message(
-      cid,
-      msg='Отображаю клавиатуру',
-      callback=cb_send_message
-      )
-    on_keyboard(cid)
-  elif text == '/joke':
-    bot.send_message(
-      cid,
-      msg='Загружаю шутку',
-      callback=cb_send_message
-      )
-    on_keyboard(cid)
-  else:
-    bot.send_message(
-      cid,
-      msg='Неизвестная команда',
-      callback=cb_send_message
-      )
+      {
+        'cid': cid,
+        'dataType': 'data'
+      },
+      data
+    )
+  elif (dataType == 'text'):
+    if data == '/start':
+      bot.send_message(
+        cid,
+        data='Сейчас начнем',
+        callback=cb_send_message
+        )
+    elif data == '/keyboard':
+      bot.send_message(
+        cid,
+        data='Отображаю клавиатуру',
+        callback=cb_send_message
+        )
+      on_keyboard(cid)
+    elif data == '/joke':
+      bot.send_message(
+        cid,
+        data='Загружаю шутку',
+        callback=cb_send_message
+        )
+      on_keyboard(cid)
+    else:
+      bot.send_message(
+        cid,
+        data='Неизвестная команда',
+        callback=cb_send_message
+        )
 
 def on_button_event(*args):
   data = args[0]
@@ -78,12 +87,12 @@ def on_button_event(*args):
   if callbackData == 'joke':
     bot.send_message(
       cid,
-      msg='Сейчас будут шутки'
+      data='Сейчас будут шутки'
     )
   elif callbackData == 'news':
     bot.send_message(
       cid,
-      msg='Сейчас будут новости'
+      data='Сейчас будут новости'
     )
 
 bot.on(BOT_MESSAGE_EVENT, on_message_event)
