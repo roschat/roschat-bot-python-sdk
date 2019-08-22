@@ -1,5 +1,5 @@
 # roschat-bot-python-sdk
-Python SDK для написания ботов для сервера РОСЧАТ.
+Python SDK для написания ботов для сервера РОСЧАТ. [Описание протокола](https://github.com/roschat/roschat-docs/wiki/roschat-bot-api) ботов.
 
 ## Установка
 Перед запуском убедитесь, что у вас уже установлены:
