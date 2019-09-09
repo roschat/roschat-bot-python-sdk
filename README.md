@@ -12,7 +12,7 @@ Python SDK для написания ботов для сервера РОСЧА
 git clone https://github.com/roschat/roschat-bot-python-sdk
 cd roschat-bot-python-sdk
 python3 -m venv env
-source env/bit/activate
+source env/bin/activate
 pip install -r requirements.txt
 ```
 
