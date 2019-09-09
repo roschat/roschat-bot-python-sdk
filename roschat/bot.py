@@ -9,15 +9,16 @@ from .constants import START_BOT, SEND_BOT_MESSAGE, BOT_MESSAGE_RECEIVED, BOT_ME
 sio = socketio.Client()
 @sio.event
 def connect():
-    print("I'm connected!")
+    print("Соединился с socket сервером")
 
 @sio.event
 def disconnect():
-    print("I'm disconnected!")
+    print("Socket соединение разорвано")
 
 def cb_start_bot(res):
   if 'error' in res:
     sio.disconnect()
+    print('Ошибка при инициализации: ', res)
   else:
     print('Бот успешно инициализирован')
 
@@ -41,7 +42,7 @@ class Roschat_Bot():
       sys.exit(1)
     server_config = json.loads(r.text)
     web_sockets_port = server_config.get('webSocketsPort')
-    socket_url = self.base_url + ':' + web_sockets_port
+    socket_url = str(self.base_url) + ':' + str(web_sockets_port)
     try:
       sio.connect(socket_url, headers=self.socket_options)
       sio.emit(
