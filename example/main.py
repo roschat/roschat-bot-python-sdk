@@ -2,98 +2,78 @@
 # -*- coding: utf-8 -*-
 from roschat.bot import Roschat_Bot
 from roschat.constants import BOT_MESSAGE_EVENT, BOT_BUTTON_EVENT
+import threading
+from datetime import datetime, date, time
 
+# Устанавливаем необходимые переменные 
+user_cid = 3
+time_interval = 30.0
+interval_message = 'Сообщение по интервалу в ' + str(time_interval) + ' секунд'
+
+# Инициализируем бота
 bot = Roschat_Bot(
-  token="8ed3e59c2c6df2deb4e98b81de5eadbc40cb151b8bb39aab7edd3084bfefb654",
-  base_url="https://ormp.ros.chat",
-  bot_name="NEW_BRAND_BOT"
-  )
+    token="f046fc088659498306a590276176c257fa99cf9fc46deacaa8d4736262d8d8f9",
+    base_url="https://smolniy.ros.chat",
+    bot_name="TETRA_BOT"
+)
 bot.start()
 
 def cb_send_message(res):
-  if not res.get('id'):
-    print('Не удалось отправить сообщение')
-  else:
-    print('Сообщение доставлено пользователю')
-
-def on_keyboard(cid):
-  keyboard = [
-    [
-      {
-        'text': 'Шутка',
-        'callbackData': 'joke'
-      },
-      {
-        'text': 'Новости',
-        'callbackData': 'news'
-      }
-    ]
-  ]
-  bot.set_bot_keyboard(
-    data={
-      'cid': cid,
-      'keyboard': keyboard,
-      'action': 'show'
-    }
-  )
-
-def on_message_event(*args):
-  data = args[0]
-  cid, data, id, dataType = [data[k] for k in ('cid', 'data', 'id', 'dataType')]
-  if (dataType == 'unstored'):
-    print('...')
-    return
-  bot.send_message_received(id)
-  bot.send_message_watched(id)
-  if (dataType == 'data'):
-    bot.send_message(
-      {
-        'cid': cid,
-        'dataType': 'data'
-      },
-      data
-    )
-  elif (dataType == 'text'):
-    if data == '/start':
-      bot.send_message(
-        cid,
-        data='Сейчас начнем',
-        callback=cb_send_message
-        )
-    elif data == '/keyboard':
-      bot.send_message(
-        cid,
-        data='Отображаю клавиатуру',
-        callback=cb_send_message
-        )
-      on_keyboard(cid)
-    elif data == '/joke':
-      bot.send_message(
-        cid,
-        data='Загружаю шутку',
-        callback=cb_send_message
-        )
-      on_keyboard(cid)
+    if not res.get('id'):
+        print('Не удалось отправить сообщение')
     else:
-      bot.send_message(
-        cid,
-        data='Неизвестная команда',
+        print('Сообщение доставлено пользователю')
+
+# Отправка сообщения указанному пользователю по интервалу
+def interval_message():
+    threading.Timer(time_interval, interval_message).start()
+    bot.send_message(
+        user_cid,
+        data=interval_message,
         callback=cb_send_message
+    )
+
+interval_message()
+
+# Обработка события 'bot-message-event' (сообщение от пользователя)
+def on_message_event(*args):
+    data = args[0]
+    cid, data, id, dataType = [data[k] for k in ('cid', 'data', 'id', 'dataType')]
+
+    
+    if (dataType == 'unstored'): # Обрабатываем событие "пользователь пишет сообщение"
+        print('Пользователь ', cid, ' пишет сообщение...')
+        return
+    bot.send_message_received(id)
+    bot.send_message_watched(id)
+
+    if (dataType == 'data'): # Обрабатываем НЕтекстовое сообщение
+        bot.send_message(
+            {
+                'cid': cid,
+                'dataType': 'data'
+            },
+            data
         )
+    elif (dataType == 'text'): # Обрабатываем текстовое сообщение
+        if data == '/start':
+            bot.send_message(
+                cid,
+                data='Сейчас начнем',
+                callback=cb_send_message
+            )
+        if data == '/date':
+            bot.send_message(
+                user_cid,
+                data='Время сервера: ' + datetime.now().strftime("%A, %d. %B %Y %I:%M%p"),
+                callback=cb_send_message
+            )
+        else:
+            bot.send_message(
+                cid,
+                data='Неизвестная команда',
+                callback=cb_send_message
+            )
 
-def on_button_event(*args):
-  data = args[0]
-  cid, callbackData = [data[k] for k in ('cid', 'callbackData')]
-  if callbackData == 'joke':
-    bot.send_message(
-      cid,
-      data='Сейчас будут шутки'
-    )
-  elif callbackData == 'news':
-    bot.send_message(
-      cid,
-      data='Сейчас будут новости'
-    )
-
+# Прослушка события 'bot-message-event' (сообщение от пользователя)
 bot.on(BOT_MESSAGE_EVENT, on_message_event)
-bot.on(BOT_BUTTON_EVENT, on_button_event)
