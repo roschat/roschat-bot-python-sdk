@@ -8,7 +8,7 @@ from datetime import datetime, date, time
 # Устанавливаем необходимые переменные 
 user_cid = 3
 time_interval = 30.0
-interval_message = 'Сообщение по интервалу в ' + str(time_interval) + ' секунд'
+message_text = "Сообщение по интервалу в " + str(time_interval) + " секунд"
 
 # Инициализируем бота
 bot = Roschat_Bot(
@@ -25,15 +25,15 @@ def cb_send_message(res):
         print('Сообщение доставлено пользователю')
 
 # Отправка сообщения указанному пользователю по интервалу
-def interval_message():
-    threading.Timer(time_interval, interval_message).start()
+def send_message_with_interval():
+    threading.Timer(time_interval, send_message_with_interval).start()
     bot.send_message(
         user_cid,
-        data=interval_message,
+        data=message_text,
         callback=cb_send_message
     )
 
-interval_message()
+send_message_with_interval()
 
 # Обработка события 'bot-message-event' (сообщение от пользователя)
 def on_message_event(*args):
