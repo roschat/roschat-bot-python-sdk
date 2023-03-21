@@ -41,7 +41,7 @@ class Roschat_Bot():
       print(e)
       sys.exit(1)
     server_config = json.loads(r.text)
-    web_sockets_port = server_config.get('webSocketsPort')
+    web_sockets_port = server_config.get('webSocketsPortVer4')
     socket_url = str(self.base_url) + ':' + str(web_sockets_port)
     try:
       sio.connect(socket_url, headers=self.socket_options)

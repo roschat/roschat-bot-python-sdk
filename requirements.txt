@@ -1,2 +1,2 @@
 requests
-python-socketio[client]
+python-socketio[client]>=5.8.0
