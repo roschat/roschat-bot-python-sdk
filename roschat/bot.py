@@ -7,9 +7,6 @@ import sys
 from .constants import START_BOT, SEND_BOT_MESSAGE, BOT_MESSAGE_RECEIVED, BOT_MESSAGE_WATCHED, SEND_BOT_MESSAGE, SEND_BOT_MESSAGE, DELETE_BOT_MESSAGE, SET_BOT_KEYBOARD
 
 sio = socketio.Client()
-@sio.event
-def connect():
-    print("Соединился с socket сервером")
 
 @sio.event
 def disconnect():
@@ -44,17 +41,27 @@ class Roschat_Bot():
     web_sockets_port = server_config.get('webSocketsPortVer4')
     socket_url = str(self.base_url) + ':' + str(web_sockets_port)
     try:
+      sio.on('connect', self.on_connected)
+
       sio.connect(socket_url, headers=self.socket_options)
-      sio.emit(
-        START_BOT, 
-        data={
-          'token': self.token,
-          'name': self.bot_name
-        },
-        callback=cb_start_bot
-        )
+
     except ValueError:
       print(ValueError)
+  
+  def on_connected (self):
+    print("Соединился с socket сервером")
+
+    self.start_bot()
+
+  def start_bot(self):
+    sio.emit(
+      START_BOT, 
+      data={
+        'token': self.token,
+        'name': self.bot_name
+      },
+      callback=cb_start_bot
+      )
 
   def on(self, event_name, callback):
     sio.on(event_name, handler=callback)

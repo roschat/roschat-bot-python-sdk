@@ -1,14 +1,27 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
+import json
 from roschat.bot import Roschat_Bot
 from roschat.constants import BOT_MESSAGE_EVENT, BOT_BUTTON_EVENT
 
 bot = Roschat_Bot(
-  token="8ed3e59c2c6df2deb4e98b81de5eadbc40cb151b8bb39aab7edd3084bfefb654",
-  base_url="https://ormp.ros.chat",
-  bot_name="NEW_BRAND_BOT"
+  token="15fa44b3492e8e77475412173c27b076da93409dbb02a7fa02d3aa8d857181c8",
+  base_url="https://stand.ros.chat",
+  bot_name="kill_net"
   )
 bot.start()
+
+def unpack_text_data(dataType, data) :
+    if (dataType == 'text'):
+      return data
+    elif (dataType == 'data'):
+      json_data = json.loads(data)
+      text = None
+      if 'text' in json_data :
+          text = json_data['text']
+
+      return text
+    
 
 def cb_send_message(res):
   if not res.get('id'):
@@ -39,35 +52,34 @@ def on_keyboard(cid):
 
 def on_message_event(*args):
   data = args[0]
-  cid, data, id, dataType = [data[k] for k in ('cid', 'data', 'id', 'dataType')]
-  if (dataType == 'unstored'):
-    print('...')
-    return
+  cid, data, id, dataType, type = [data[k] for k in ('cid', 'data', 'id', 'dataType', 'type')]
+  if (dataType == 'unstored'): return
+
   bot.send_message_received(id)
   bot.send_message_watched(id)
-  if (dataType == 'data'):
+
+  text = unpack_text_data(dataType, data)
+  if (not text):
     bot.send_message(
-      {
-        'cid': cid,
-        'dataType': 'data'
-      },
-      data
-    )
-  elif (dataType == 'text'):
-    if data == '/start':
+      cid,
+      data='Я работаю только с текстовыми командами.',
+      callback=cb_send_message
+      )
+  else:
+    if text == '/start':
       bot.send_message(
         cid,
         data='Сейчас начнем',
         callback=cb_send_message
         )
-    elif data == '/keyboard':
+    elif text == '/keyboard':
       bot.send_message(
         cid,
         data='Отображаю клавиатуру',
         callback=cb_send_message
         )
       on_keyboard(cid)
-    elif data == '/joke':
+    elif text == '/joke':
       bot.send_message(
         cid,
         data='Загружаю шутку',
