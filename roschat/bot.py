@@ -4,6 +4,7 @@ import requests
 import socketio
 import json
 import sys
+from time import sleep
 from .constants import START_BOT, SEND_BOT_MESSAGE, BOT_MESSAGE_RECEIVED, BOT_MESSAGE_WATCHED, SEND_BOT_MESSAGE, SEND_BOT_MESSAGE, DELETE_BOT_MESSAGE, SET_BOT_KEYBOARD
 
 sio = socketio.Client()
@@ -19,10 +20,9 @@ def cb_start_bot(res):
   else:
     print('Бот успешно инициализирован')
 
-def cb_send_message (res):
+def cb_send_message(res):
   if not res.get('id'):
-    print('Не удалось отправить сообщение')
-
+    print('Не удалось отправить сообщение', res)
 class Roschat_Bot():
   def __init__(self, token, base_url, bot_name, socket_options={'query': 'type-bot'}):
     self.token = token
@@ -30,8 +30,9 @@ class Roschat_Bot():
     self.bot_name = bot_name
     self.socket_options = socket_options
 
-  def start(self):
+  def start(self, on_start):
     server_url = self.base_url + '/ajax/config.json'
+    self.on_start = on_start
     try:
       r = requests.get(server_url)
     except requests.exceptions.RequestException as e:
@@ -49,8 +50,11 @@ class Roschat_Bot():
       print(ValueError)
   
   def on_connected (self):
-    print("Соединился с socket сервером")
+    print("Соединился с socket сервером...")
 
+    sleep(2)
+
+    print("Стартую бота...")
     self.start_bot()
 
   def start_bot(self):
@@ -60,7 +64,7 @@ class Roschat_Bot():
         'token': self.token,
         'name': self.bot_name
       },
-      callback=cb_start_bot
+      callback=self.on_start
       )
 
   def on(self, event_name, callback):
@@ -82,7 +86,7 @@ class Roschat_Bot():
       if not params.get('cid'):
         print('Для отправки сообщения необходим cid пользователя')
         return
-      params['data']=data
+      params['data']= json.dumps(data)
     sio.emit(SEND_BOT_MESSAGE, data=params, callback=callback)
 
   def send_message_received(self, msg_id, callback=None):
