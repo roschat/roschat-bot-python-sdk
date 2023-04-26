@@ -86,7 +86,7 @@ class Roschat_Bot():
       if not params.get('cid'):
         print('Для отправки сообщения необходим cid пользователя')
         return
-      params['data']= json.dumps(data)
+    params['data'] = data if isinstance(data, str) else json.dumps(data)
     sio.emit(SEND_BOT_MESSAGE, data=params, callback=callback)
 
   def send_message_received(self, msg_id, callback=None):

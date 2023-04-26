@@ -43,7 +43,10 @@ def on_bot_start(res):
     )
 
     bot.send_message(
-        to_contact,
+        params={
+            'cid': to_contact,
+            'dataType': 'text'
+        },
         data='Как дела?'
     )
 
