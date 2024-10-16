@@ -7,7 +7,10 @@ import sys
 from time import sleep
 from .constants import START_BOT, SEND_BOT_MESSAGE, BOT_MESSAGE_RECEIVED, BOT_MESSAGE_WATCHED, SEND_BOT_MESSAGE, SEND_BOT_MESSAGE, DELETE_BOT_MESSAGE, SET_BOT_KEYBOARD
 
-sio = socketio.Client()
+http_session = requests.Session()
+http_session.verify = False
+# sio = socketio.Client(http_session=http_session, logger=True, engineio_logger=True)
+sio = socketio.Client(http_session=http_session)
 
 @sio.event
 def disconnect():
@@ -24,7 +27,7 @@ def cb_send_message(res):
   if not res.get('id'):
     print('Не удалось отправить сообщение', res)
 class Roschat_Bot():
-  def __init__(self, token, base_url, bot_name, socket_options={'query': 'type-bot'}):
+  def __init__(self, token, base_url, bot_name, socket_options={'query': 'type-bot', 'rejectUnauthorized': 'false'}):
     self.token = token
     self.base_url = base_url
     self.bot_name = bot_name
@@ -34,7 +37,7 @@ class Roschat_Bot():
     server_url = self.base_url + '/ajax/config.json'
     self.on_start = on_start
     try:
-      r = requests.get(server_url)
+      r = requests.get(server_url, verify=False)
     except requests.exceptions.RequestException as e:
       print(e)
       sys.exit(1)
@@ -43,7 +46,6 @@ class Roschat_Bot():
     socket_url = str(self.base_url) + ':' + str(web_sockets_port)
     try:
       sio.on('connect', self.on_connected)
-
       sio.connect(socket_url, headers=self.socket_options)
 
     except ValueError:
@@ -65,7 +67,7 @@ class Roschat_Bot():
         'name': self.bot_name
       },
       callback=self.on_start
-      )
+    )
 
   def on(self, event_name, callback):
     sio.on(event_name, handler=callback)

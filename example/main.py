@@ -6,8 +6,8 @@ from roschat.bot import Roschat_Bot
 from roschat.constants import BOT_MESSAGE_EVENT, BOT_BUTTON_EVENT
 
 bot = Roschat_Bot(
-    token="478b9f28bc4fd76788cdc3ea12131921bb11cd93e2b99fcf811de0fefc599abd",
-    base_url="https://stand.ros.chat",
+    token="07cff473c113e8c46114849f9b1a2d2eb6e059f5665a67899155abdb2e68d5ea",
+    base_url="https://10.10.38.191",
     bot_name="test_bot_123"
 )
 
@@ -65,10 +65,17 @@ def on_message_event(*args):
     if (dataType == 'unstored'):
         return
 
+    print(f'cid: {cid}')
+    print(f'id: {id}')
+    print(f'cidType: {cidType}')
+    print(f'dataType: {dataType}')
+    print(f'msgData: {msgData}')
+
     bot.send_message_received(id)
     bot.send_message_watched(id)
 
     text = unpack_text_data(dataType, msgData)
+    print(f'user text: {text}')
     if (not text):
         bot.send_message(
             cid,
@@ -126,3 +133,6 @@ def on_bot_start(res):
 bot.start(on_bot_start)
 bot.on(BOT_MESSAGE_EVENT, on_message_event)
 bot.on(BOT_BUTTON_EVENT, on_button_event)
+
+while True:
+    sleep(1)
